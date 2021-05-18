@@ -1,0 +1,5 @@
+apiVersion: koss.invidian.github.io/v1alpha1
+kind: Sysctl
+metadata:
+  name: vm.overcommit_ratio
+value: "50"
