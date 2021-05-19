@@ -61,6 +61,12 @@ func main() {
 }
 
 func dispatch(w http.ResponseWriter, req *http.Request) {
+	if req.URL.Path == "/apis" {
+		apis(w)
+
+		return
+	}
+
 	if !strings.HasPrefix(req.URL.Path, apiPrefix) {
 		dump(w, req)
 
@@ -143,6 +149,33 @@ func dispatch(w http.ResponseWriter, req *http.Request) {
 	}
 
 	dump(w, req)
+}
+
+func apis(w http.ResponseWriter) {
+	w.Header().Add("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	data := `{
+  "kind": "APIGroupList",
+  "apiVersion": "v1",
+  "groups": [
+		{
+      "name": "koss.invidian.github.io",
+      "versions": [
+        {
+          "groupVersion": "koss.invidian.github.io/v1alpha1",
+          "version": "v1alpha1"
+        }
+      ],
+      "preferredVersion": {
+        "groupVersion": "koss.invidian.github.io/v1alpha1",
+        "version": "v1alpha1"
+      }
+    }
+  ]
+}`
+
+	w.Write([]byte(data))
 }
 
 func set(w http.ResponseWriter, name string, value string) {
