@@ -27,6 +27,7 @@ const (
 	certValidityDuration = 1 * time.Hour
 	apiPrefix            = "/apis/koss.invidian.github.io/v1alpha1"
 	sysctlAPI            = "sysctl"
+	port                 = 8443
 )
 
 type sysctl struct {
@@ -46,7 +47,7 @@ func main() {
 	mux.HandleFunc("/", dispatch)
 
 	server := http.Server{
-		Addr: ":8443",
+		Addr: fmt.Sprintf(":%d", port),
 		TLSConfig: &tls.Config{
 			Certificates: []tls.Certificate{
 				*certificate,
