@@ -6,7 +6,6 @@ import (
 	"crypto/rsa"
 	"crypto/tls"
 	"crypto/x509"
-	"crypto/x509/pkix"
 	"encoding/json"
 	"encoding/pem"
 	"fmt"
@@ -323,15 +322,7 @@ func selfSignedCerts() (*tls.Certificate, error) {
 
 	template := x509.Certificate{
 		SerialNumber: big.NewInt(1),
-		Subject: pkix.Name{
-			Organization: []string{"example"},
-		},
-		NotBefore:             time.Now(),
-		NotAfter:              time.Now().Add(certValidityDuration),
-		KeyUsage:              x509.KeyUsageKeyEncipherment | x509.KeyUsageDigitalSignature,
-		ExtKeyUsage:           []x509.ExtKeyUsage{x509.ExtKeyUsageServerAuth},
-		BasicConstraintsValid: true,
-		IsCA:                  true,
+		NotAfter:     time.Now().Add(certValidityDuration),
 	}
 
 	// Create X.509 certificate in DER format.
