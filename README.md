@@ -51,3 +51,16 @@ metadata:
 value: "50"
 EOF
 ```
+
+## Testing standalone (without Aggregation API Server)
+
+For simplicity, when starting KOSS, it will write a `kubeconfig` file in current working directory, so you can use it
+to directly communicate with Extension API server, without a need for regular API server.
+
+Note, that when in this mode, only `kubectl get` and `kubectl patch` will work. `kubectl apply`, `kubectl edit` or `kubectl create` will fail right now. This limitation might be addressed in the future.
+
+To use created `kubeconfig`, run the command below in directory when you started KOSS:
+
+```sh
+export KUBECONFIG=$(pwd)/kubeconfig
+```
