@@ -107,6 +107,12 @@ func dispatch(w http.ResponseWriter, req *http.Request) {
 		return
 	}
 
+	if req.URL.Path == "/openapi/v2" {
+		openapi(w)
+
+		return
+	}
+
 	if !strings.HasPrefix(req.URL.Path, apiPrefix) {
 		dump(w, req)
 
@@ -189,6 +195,101 @@ func dispatch(w http.ResponseWriter, req *http.Request) {
 	}
 
 	dump(w, req)
+}
+
+func openapi(w http.ResponseWriter) {
+	w.Header().Add("Content-Type", "application/json")
+	w.WriteHeader(http.StatusOK)
+
+	data := fmt.Sprintf(`{
+  "swagger": "2.0",
+  "info": {
+    "title": "Kubernetes",
+    "version": "v1.21.1"
+  },
+  "paths": {
+    "%s": {
+      "get": {
+        "description": "get available sysctl knobs",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "operationId": "getSysctlV1alpha1APIResources",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "%s/{name}": {
+      "get": {
+        "description": "get single sysctl knob",
+        "consumes": [
+          "application/json"
+        ],
+        "produces": [
+          "application/json"
+        ],
+        "schemes": [
+          "https"
+        ],
+        "operationId": "readSysctlV1alpha1",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      },
+      "parameters": [
+        {
+          "uniqueItems": true,
+          "type": "string",
+          "description": "name of the sysctl knob",
+          "name": "name",
+          "in": "path",
+          "required": true
+        }
+      ]
+    }
+  },
+  "definitions: {
+    "io.github.invidian.koss.v1alpha1.Sysctl": {
+      "description": "Sysctl knob.",
+      "type": "object",
+      "required": [
+        "value"
+      ],
+      "properties": {
+        "apiVersion": {
+          "type": "string"
+        },
+        "kind": {
+          "type": "string"
+        },
+        "value": {
+          "type": "string"
+        }
+      },
+      "x-kubernetes-group-version-kind": [
+        {
+          "group": "koss.invidian.github.io",
+          "kind": "Sysctl",
+          "version": "v1alpha1"
+        }
+      ]
+    }
+  }
+}
+`, apiPrefix, apiPrefix)
+
+	w.Write([]byte(data))
 }
 
 func apis(w http.ResponseWriter) {
